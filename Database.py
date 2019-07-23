@@ -3,7 +3,7 @@ logger = logging.getLogger(__name__)
 
 class Database:
     def __init__(self, channel):
-        self.db_name = f"MarkovChain_{channel.replace('#', '').lower()}.db"
+        self.db_name = f"UrbanWhisper_{channel.replace('#', '').lower()}.db"
 
         logger.debug("Creating Database...")
         sql = """
