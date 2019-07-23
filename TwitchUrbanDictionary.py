@@ -1,5 +1,5 @@
 from TwitchWebsocket import TwitchWebsocket
-import json, requests, random, logging, time
+import json, requests, random, logging, time, re
 
 from itertools import accumulate
 from enum import Enum, auto
@@ -27,6 +27,7 @@ class TwitchUrbanDictionary:
         self.auth = None
         self.max_chars = None
         self.cooldown = None
+        self.banned_words = []
 
         self.last_message_t = 0
 
@@ -52,7 +53,8 @@ class TwitchUrbanDictionary:
         
     def update_settings(self):
         # Fill previously initialised variables with data from the settings.txt file
-        self.host, self.port, self.chan, self.nick, self.auth, self.max_chars, self.cooldown = Settings().get_settings()
+        self.host, self.port, self.chan, self.nick, self.auth, self.max_chars, self.cooldown, banned_words = Settings().get_settings()
+        self.banned_words = re.compile(("|".join(banned_words)).lower())
 
     def message_handler(self, m):
         try:
@@ -136,8 +138,12 @@ class TwitchUrbanDictionary:
         definition_dict = data["list"][0]
 
         # Get the actual definition/example using the value of the CommandType enum
-        definition = definition_dict[["definition", "example"][command_type.value]]
-        word = definition_dict["word"].capitalize()
+        definition = definition_dict['definition' if command_type == CommandType.DEFINITION else 'example']
+        term = definition_dict["word"].capitalize()
+
+        # Check if the definition or the term itself contains a banned word
+        if re.search(self.banned_words, (term + definition).lower()): 
+            return f"This {'definition' if command_type == CommandType.DEFINITION else 'example'} contained a banned word.", ResultCode.ERROR
 
         # Clean the definition by removing hyperlink notations, (eg the brackets)
         definition = self.clean(definition)
@@ -146,7 +152,7 @@ class TwitchUrbanDictionary:
 
         # If we are dealing with a definition, we include the term the definition is for
         if command_type == CommandType.DEFINITION:
-            definition = f"{word}: {definition}"
+            definition = f"{term}: {definition}"
 
         # Return our modified definition
         return definition, ResultCode.SUCCESS

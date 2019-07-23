@@ -34,7 +34,8 @@ class Settings:
                                     "Nickname": "<name>",
                                     "Authentication": "oauth:<auth>",
                                     "MaxCharacters": 150,
-                                    "Cooldown": 30
+                                    "Cooldown": 30,
+                                    "BannedWords": []
                                 }
                 f.write(json.dumps(standard_dict, indent=4, separators=(',', ': ')))
                 raise ValueError("Please fix your settings.txt file that was just generated.")
