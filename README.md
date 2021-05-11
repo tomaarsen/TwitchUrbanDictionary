@@ -10,14 +10,14 @@ Because both the definitions and examples can be quite long, it is possible to s
 
 The bot has a configurable cooldown attached, to prevent spam in chat.
 
+---
+
 # Usage
 Command:
 <pre><b>!urban &lt;term&gt;</b></pre>
 For example:
 <pre><b>!urban hello<br>Hello: a very offensive curse word.</pre></b>
 Anyone can use this command.
-
----
 
 Command:
 <pre><b>!example &lt;term&gt;</b></pre>
